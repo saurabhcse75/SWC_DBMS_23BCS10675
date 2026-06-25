@@ -1,0 +1,10 @@
+SELECT COUNT(*) AS payment_count
+FROM (
+    SELECT *,
+           LAG(transaction_timestamp) OVER(
+               PARTITION BY merchant_id, credit_card_id, amount
+               ORDER BY transaction_timestamp
+           ) AS prev_time
+    FROM transactions
+) t
+WHERE transaction_timestamp - prev_time <= INTERVAL '10 minutes';
